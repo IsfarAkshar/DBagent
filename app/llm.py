@@ -1,15 +1,48 @@
-from transformers import AutoModelForCausalLM, AutoTokenizer, pipeline
+#import google.generativeai as genai
+#import os
+
+#genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
+
+#model = genai.GenerativeModel("gemini-1.0-pro")
+
+#def generate_sql(prompt: str) -> str:
+    #response = model.generate_content(prompt)
+#    response = genai.generate_content(
+#        model="models/gemini-1.5-flash",
+#        contents=prompt
+#    )
+#    return response.text.strip()
+
+###Gemini
+#import google.generativeai as genai
+#import os
+
+#genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
+
+# ✅ Compatible model for your SDK
+#model = genai.GenerativeModel("models/text-bison-001")
+
+#def generate_sql(prompt: str) -> str:
+#    response = model.generate_content(prompt)
+#    return response.text.strip()
+
+
+##Openai
+from openai import OpenAI
 import os
-from dotenv import load_dotenv
 
-load_dotenv()
-MODEL_PATH = os.getenv("LLM_MODEL_PATH")
+client = OpenAI(
+    base_url="https://openrouter.ai/api/v1",
+    api_key=os.getenv("OPENROUTER_API_KEY")
+)
 
-tokenizer = AutoTokenizer.from_pretrained(MODEL_PATH, trust_remote_code=True)
-model = AutoModelForCausalLM.from_pretrained(MODEL_PATH, trust_remote_code=True)
+def generate_sql(prompt: str) -> str:
+    response = client.chat.completions.create(
+        model="openrouter/auto",  # ✅ free models auto-selected
+        messages=[
+            {"role": "user", "content": prompt}
+        ],
+        temperature=0
+    )
 
-generator = pipeline("text-generation", model=model, tokenizer=tokenizer, device=-1)  # CPU
-
-def generate_sql(prompt: str, max_tokens: int = 200) -> str:
-    output = generator(prompt, max_new_tokens=max_tokens, do_sample=False)
-    return output[0]['generated_text']
+    return response.choices[0].message.content.strip()
