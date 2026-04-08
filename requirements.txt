@@ -1,0 +1,8 @@
+fastapi
+uvicorn
+databases[postgresql]
+sqlalchemy
+pydantic
+transformers
+torch
+sentencepiece
