@@ -31,3 +31,7 @@ async def execute_sql_route(payload: QueryRequest):
         return ExecuteResponse(sql=sql, rows=[dict(r) for r in rows])
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Query failed: {str(e)}")
+    
+@app.get("/")
+def home():
+    return {"message": "DBagent is running"}
